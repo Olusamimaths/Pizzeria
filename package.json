@@ -9,6 +9,7 @@
   "author": "Olusola Samuel",
   "license": "MIT",
   "dependencies": {
+    "aws-sdk": "^2.729.0",
     "claudia-api-builder": "^4.1.2"
   }
 }
