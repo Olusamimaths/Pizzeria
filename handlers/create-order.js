@@ -26,9 +26,9 @@ const createOrder = (order) => {
     .then((response) => {
       return docClient
         .put({
-          orderId: response.deliveryId, // deliveryId is unique and can be used as id of order
           TableName: "pizza-orders",
           Item: {
+            orderId: response.deliveryId, // deliveryId is unique and can be used as id of order
             pizza: order.pizza,
             address: order.address,
             orderStatus: "pending",
