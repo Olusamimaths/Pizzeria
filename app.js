@@ -45,7 +45,7 @@ api.put(
 api.delete(
   "/orders/{id}",
   (request) => {
-    return deleteOrder(request.pathParams.orderId);
+    return deleteOrder(request.pathParams.id);
   },
   { error: 400 }
 );
