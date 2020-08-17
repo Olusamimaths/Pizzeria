@@ -1,0 +1,15 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "ThisStatementProvidesPermissionsForUserPool",
+            "Effect": "Allow",
+            "Action": [
+                "cognito-identity:*",
+                "cognito-idp:CreateUserPoolClient",
+                "cognito-idp:CreateUserPool"
+            ],
+            "Resource": "*"
+        }
+    ]
+}

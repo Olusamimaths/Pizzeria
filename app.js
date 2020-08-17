@@ -1,11 +1,19 @@
 const Api = require("claudia-api-builder");
 const api = new Api();
+const dotenv = require("dotenv");
+dotenv.config();
+
 const getPizzas = require("./handlers/get-pizza");
 const createOrder = require("./handlers/create-order");
 const updateOrder = require("./handlers/update-order");
 const deleteOrder = require("./handlers/delete-order");
 const getOrders = require("./handlers/get-orders");
 const updateDeliveryStatus = require("./handlers/update-delivery-status");
+
+// register a custom authorizer
+api.registerAuthorizer("userAuthentication", {
+  providerARNs: [process.env.userPoolArn],
+});
 
 api.get("/", () => "Welcome to Pizza API");
 
@@ -32,7 +40,7 @@ api.post(
   (request) => {
     return createOrder(request.body);
   },
-  { success: 201, error: 404 }
+  { success: 201, error: 404, cognitoAuthorizer: "userAuthentication" }
 );
 
 api.post(
@@ -40,7 +48,7 @@ api.post(
   (request) => {
     return updateDeliveryStatus(request.body);
   },
-  { success: 200, error: 400 }
+  { success: 200, error: 400, cognitoAuthorizer: "userAuthentication" }
 );
 
 api.put(
@@ -48,7 +56,7 @@ api.put(
   (request) => {
     return updateOrder(request.pathParams.id, request.body);
   },
-  { error: 400 }
+  { error: 400, cognitoAuthorizer: "userAuthentication" }
 );
 
 api.delete(
@@ -56,7 +64,7 @@ api.delete(
   (request) => {
     return deleteOrder(request.pathParams.id);
   },
-  { error: 400 }
+  { error: 400, cognitoAuthorizer: "userAuthentication" }
 );
 
 module.exports = api;
