@@ -3,9 +3,18 @@ const AWS = AWSXRay.captureAWS(require("aws-sdk"));
 const rp = require("minimal-request-promise");
 const docClient = new AWS.DynamoDB.DocumentClient();
 
-const createOrder = (order) => {
-  console.log("Save an order", order);
-  if (!order || !order.pizza || !order.address)
+const createOrder = (request) => {
+  console.log("Save an order", request.body);
+  // get the user data from the request context object
+  const userData = request.context.authorizer.claims;
+  console.log("User data", userData);
+
+  //by default yse the address from the request
+  let userAddress = request.body && request.body.address;
+  // if the user address is not supplied use the default address
+  if (!userAddress) userAddress = JSON.parse(userAddress.address).formatted;
+
+  if (!request.body || !request.body.pizza || !request.body.address)
     throw new Error("The order must have an id and a customer address.");
 
   // make the delivery request before saving the order
@@ -19,7 +28,7 @@ const createOrder = (order) => {
         body: JSON.stringify({
           pickupTime: "12: 21pm",
           pickupAddress: "Some Pizzeria",
-          deliveryAddress: order.address,
+          deliveryAddress: userAddress,
           webhookUrl:
             "https://urdq9bteqa.execute-api.eu-central-1.amazonaws.com/latest/delivery",
         }),
@@ -32,8 +41,8 @@ const createOrder = (order) => {
             TableName: "pizza-orders",
             Item: {
               orderId: response.deliveryId, // deliveryId is unique and can be used as id of order
-              pizza: order.pizza,
-              address: order.address,
+              pizza: request.body.pizza,
+              address: userAddress,
               orderStatus: "pending",
             },
           })

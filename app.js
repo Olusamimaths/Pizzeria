@@ -9,6 +9,7 @@ const updateOrder = require("./handlers/update-order");
 const deleteOrder = require("./handlers/delete-order");
 const getOrders = require("./handlers/get-orders");
 const updateDeliveryStatus = require("./handlers/update-delivery-status");
+const getSignedUrl = require("./handlers/generate-presigned-url");
 
 // register a custom authorizer
 api.registerAuthorizer("userAuthentication", {
@@ -38,7 +39,7 @@ api.get(
 api.post(
   "/orders",
   (request) => {
-    return createOrder(request.body);
+    return createOrder(request);
   },
   { success: 201, error: 404, cognitoAuthorizer: "userAuthentication" }
 );
@@ -62,9 +63,17 @@ api.put(
 api.delete(
   "/orders/{id}",
   (request) => {
-    return deleteOrder(request.pathParams.id);
+    return deleteOrder(request);
   },
   { error: 400, cognitoAuthorizer: "userAuthentication" }
+);
+
+api.get(
+  "upload-url",
+  (request) => {
+    return getSignedUrl();
+  },
+  { error: 400, cognitoAuthorizer: "userAuthentication"}
 );
 
 module.exports = api;
